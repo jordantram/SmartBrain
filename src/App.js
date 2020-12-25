@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
 import Navigation from './components/Navigation/Navigation.js';
 import Logo from './components/Logo/Logo.js';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm.js';
@@ -10,10 +9,6 @@ import SignIn from './components/SignIn/SignIn.js';
 import Register from './components/Register/Register.js';
 import './App.css';
 import 'tachyons';
-
-const app = new Clarifai.App({
-  apiKey: 'd3f84857b0694d2e88500ec8772bafce'
- });
 
 const particlesOptions = {
   particles: {
@@ -80,29 +75,35 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input});
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-      .then(response => {
-          if (response) {
-            fetch('http://localhost:3000/image', {
-              method: 'put',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                id: this.state.user.id
-              })
-            })
-              .then(response => response.json())
-              .then(count => {
-                this.setState(Object.assign(this.state.user, { entries: count }))
-              })
-          }
-          this.drawFaceBox(this.calculateFaceLocation(response));
-        })
-      .catch(err => {
-        console.log(err);
+    fetch('http://localhost:3000/imageurl', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        input: this.state.input
       })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          fetch('http://localhost:3000/image', {
+            method: 'put',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: this.state.user.id
+            })
+          })
+            .then(response => response.json())
+            .then(count => {
+              this.setState(Object.assign(this.state.user, { entries: count }))
+            })
+        }
+        this.drawFaceBox(this.calculateFaceLocation(data));
+      })
+      .catch(err => console.log(err));
   }
 
   onRouteChange = (route) => {
