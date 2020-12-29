@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# SmartBrain
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Web app built using React which identifies faces in images using Clarifai's API. This app allows for user registration/login and keeps track of user entries. Built using React, Node, Express, and PostgreSQL. Coded along with Andrei Neagoie.
 
 ## Available Scripts
 
